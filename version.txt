@@ -1,0 +1,77 @@
+Alpha 7.7 - Fixed the calling staying over to the next turn.
+
+Alpha 7.6 - Fixed score adjust not working all the time.
+
+Alpha 7.5 - Added the DEF.ini option to change the size of the chips and raise screenshots.
+
+Alpha 7.4 - Changed chips pic width from 85 to 100. Added option to stay longer in room if bots winning.
+
+Alpha 7.3 - The Chips screenshot will grab a few more numbers. Changed when he checks to see if he needs to bank.
+
+Alpha 7.2 - Changed Banking to high and low. Fixed the all in wins/loses. 
+
+Alpha 7.1 - Using Tesseract to read the call upto amount. Huge change in _myturn should fix using old calls.
+
+Alpha 7.0 - Added TrayTip. Using Tesseract to read the chip amount. Turn is using 3/4 the adjust instead of 1/2.
+
+Alpha 6.6 - Changed the times when he checks to see the min players was met and leaves.
+
+Alpha 6.5 - Fixed a problem where the preflop raises and all ins were not counted in the 'til banks'.
+
+Alpha 6.4 - Tweaked call_upto.  Score Adjust uses / 2 for turn and 0 for river scores.
+
+Alpha 6.3 - Turn calling Amount using the correct amount. Shouldn't carry over hands or scores (i hope)
+
+Alpha 6.2 - Fixed Banking Loop in 6.1.  Ugh
+
+Alpha 6.1   Bot will now decide if its ok to bank when joining a new room. If not he will on next preflop fold.
+
+Alpha 6.0 - Added force banking setting for all in and raises. Added flop and turn raise amounts.
+
+Alpha 5.3 - Fixed minplayers. Tweeked Tooltip Calling. Added seperate call amounts for the flop turn and river hands.
+
+Alpha 5.2 - Added Preflop calling in the tooltip. Added Flop, Turn and River scoring. Fixed Banking after all in?
+
+Alpha 5.1 - Fixed a raise issue and a banking problem
+
+Alpha 5.0 - Added hands total, fixed seats, river loop, banking, added riverraiseamount, seat not found changed to 15x.
+
+Alpha 4.3 - Checks the called amount vs call amount before calling hand instead of after the hand
+
+Alpha 4.2 - Added called amount
+
+Alpha 4.1 - Call_upto will fold 2nd time around.
+
+Alpha 4.0 - Fixed placement of the blind.
+
+Alpha 3.5 - Changed pause timers. Should fix banking and table issues
+
+Alpha 3.4 - Worked on call_upto
+
+Alpha 3.3 - Fixed crash and call_upto
+
+Alpha 3.2 - Fixed crash and stand-up bug
+
+Alpha 3.1 - Fixed Score
+
+Alpha 3.0 - Added individual score adjusting per card set, changed call_upto, fixed card reading
+
+Alpha 2.2 - Fixed infinite raising
+
+Alpha 2.1 - Fixed more popups, added river call amount 
+
+Alpha 2.0 - Kills more popups, added force bank and force new room.
+
+Alpha 1.5 - Fixed a Suited call_any bug. 
+
+Alpha 1.4 - Fixed a suited all_in problem.  Brought back call_once.
+
+Alpha 1.3 - Added the option to use call_upto for the flopscore. Added a ini help file. Changed Tooltips.
+
+Alpha 1.21 & 1.22 - Fixed a FlopScore issue
+
+Alpha 1.2 - Changed call_once to call_upto.  [call] callamount=4
+
+Alpha 1.1 - Added a raise amount in the fred.ini. [raise] raiseamount =5
+
+Alpha 1.0 - Got rid of the score_adjust. Finally got it to read from the FlopScore in the .ini
