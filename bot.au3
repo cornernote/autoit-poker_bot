@@ -25,6 +25,7 @@
 
 ;
 ; TODO
+; Ini - load all ini vars at init
 ; Lobby - ability to auto join game from home/lobby
 ; Action (opponent actions and raise amount)
 ; Button position (dealer buton)
@@ -38,9 +39,12 @@
 ;=================================================================
 HotKeySet("^!x", "Terminate")
 Func Terminate()
+   _Log('Terminating')
+   _ClassifyClose()
+   _GuiDelete()
    _Log('Terminated')
    Exit
-EndFunc   ;==>Terminate
+EndFunc
 
 ;=================================================================
 ; Pause Switch
@@ -55,9 +59,7 @@ Func TogglePokerbot()
       _Log('Unpaused')
 	  $paused = False
    EndIf
-EndFunc   ;==>TogglePokerbot
-
-
+EndFunc
 
 ;=================================================================
 ; Main Driver
@@ -79,10 +81,4 @@ While 1
    GUICtrlSetBkColor($guiAction, 0x000000)
    _WindowNextGame()
 WEnd
-
-
-;=================================================================
-; Cleanup
-;=================================================================
-_ClassifyClose()
-_GuiDelete()
+Terminate()
