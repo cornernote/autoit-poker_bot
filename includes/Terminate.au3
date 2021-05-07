@@ -2,9 +2,11 @@
 ; Terminate
 ;=================================================================
 Func _Terminate()
-   Local $confirm = MsgBox($MB_YESNO, "Confirm Exit" ,"Do you want to terminate the bot?")
-   If $confirm <> $IDYES Then
-	  Return
+   If @GUI_CtrlId == $guiClose Then
+	  Local $confirm = MsgBox($MB_YESNO, "Confirm Exit" ,"Do you want to terminate the bot?")
+	  If $confirm <> $IDYES Then
+		 Return
+	  EndIf
    EndIf
    _Log('Terminating')
    _ClassifyClose()

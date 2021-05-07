@@ -37,8 +37,8 @@
 ; Chat (room spam?)
 
 ; set hotkeys
-HotKeySet("^!x", "_Terminate")
-HotKeySet("^!p", "_PauseToggle")
+HotKeySet("^q", "_Terminate")
+HotKeySet("^p", "_PauseToggle")
 
 ; init
 _IniInit()
