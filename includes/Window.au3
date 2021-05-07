@@ -7,7 +7,7 @@ Global $window[4]
 Func _WindowRead()
    _WindowReset()
    Opt("WinTitleMatchMode", -2)
-   If Not WinWaitActive($ini_game_title) Then
+   If Not $ini_bot_debug And Not WinWaitActive($ini_game_title) Then
 	  _Log("window with name '" & $ini_game_title & "' not active...")
 	  Sleep(2000)
 	  Return
