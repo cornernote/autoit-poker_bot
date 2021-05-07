@@ -38,7 +38,6 @@ EndFunc
 
 ; read card numbers and suits
 Func _CardsRead()
-   ;Local $timer = TimerInit()
    _CardsReset()
    For $i = 0 To UBound($cards, $UBOUND_ROWS) - 1
 	  If _Card($i) Then
@@ -46,7 +45,6 @@ Func _CardsRead()
          $cards[$i][1] = _CardSuit($i)
 	  EndIf
    Next
-   ;_Log('_Cards():'&TimerDiff($timer))
 EndFunc
 
 ; check if a card is visable

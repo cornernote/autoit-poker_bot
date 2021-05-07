@@ -19,9 +19,7 @@ EndFunc
 
 ; read action buttons
 Func _BlindRead()
-   ;Local $timer = TimerInit()
    _BlindReset()
    ; TODO
    $blind = "400"
-   ;_Log('_BlindRead():'&TimerDiff($timer))
 EndFunc
