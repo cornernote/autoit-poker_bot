@@ -55,6 +55,10 @@ While 1
 
    ; scrape some data
    _WindowRead()
+   If Not $window[3] Then
+	  _GuiHide()
+	  ContinueLoop
+   EndIf
    _BlindRead()
    _CardsRead()
    _OpponentsRead()

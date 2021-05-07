@@ -134,9 +134,21 @@ Func _GuiInit()
    _WinAPI_SetLayeredWindowAttributes($gui, 0x0000F4)
    GuiSetState()
 
-   ; show gui
-   GUISetState(@SW_SHOW, $gui)
+   ; start hidden
+   _GuiHide()
 
+EndFunc
+
+Func _GuiDelete()
+    GUIDelete($gui)
+EndFunc
+
+Func _GuiHide()
+   GUISetState(@SW_HIDE, $gui)
+EndFunc
+
+Func _GuiShow()
+   GUISetState(@SW_SHOW, $gui)
 EndFunc
 
 Func _GuiUpdate()
@@ -151,6 +163,7 @@ Func _GuiUpdate()
    _GuiSetValue($guiAmountToRaise, 'raise:'&_GuiString($actionAmountToRaise))
    _GuiUpdateActions()
    _GuiUpdatePlay()
+   _GuiShow()
 EndFunc
 
 Func _GuiString($string)
@@ -253,10 +266,6 @@ Func _GuiUpdatePlay()
 	  $value = $value&':'&$profilePlaRaiseAmount
    EndIf
    _GuiSetValue($guiPlay, $value)
-EndFunc
-
-Func _GuiDelete()
-    GUIDelete($gui)
 EndFunc
 
 Func _GuiToggleActionChecksum()

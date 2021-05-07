@@ -7,13 +7,20 @@ Global $window[4]
 Func _WindowRead()
    _WindowReset()
    Opt("WinTitleMatchMode", -2)
+   If Not WinWaitActive($ini_game_title) Then
+	  _Log("window with name '" & $ini_game_title & "' not active...")
+	  Sleep(2000)
+	  Return
+   EndIf
    Local $winPos = WinGetPos($ini_game_title)
    If @error Then
 	  _Log("window with name '" & $ini_game_title & "' not found...")
+	  Sleep(2000)
 	  Return
    EndIf
    If $winPos[2] <> 1920 Or $winPos[3] <> 1080 Then
 	  _Log("window must be 1920x1080 (currently " & $winPos[2] & "x" & $winPos[3] & ")")
+	  Sleep(2000)
 	  Return
    EndIf
    $window = $winPos
