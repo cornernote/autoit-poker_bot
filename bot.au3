@@ -44,6 +44,7 @@ HotKeySet("^!p", "_PauseToggle")
 
 ; init
 _IniInit()
+_LogInit()
 _CardsInit()
 _ClassifyInit()
 _GuiInit()

@@ -2,15 +2,21 @@
 
 #include <Array.au3>
 
+Func _LogInit()
+   Local $path = @ScriptDir & "\data\log"
+   DirCreate($path)
+EndFunc
+
 Func _Log($value)
+   Local $path = @ScriptDir & "\data\log"
    Local $date = (@YEAR & "-" & @MON & "-" & @MDAY & "-" & @HOUR & "-" & @MIN & "-" & @SEC & "-" & @MSEC)
-  ;$filename = $logPath&'\log_'&(@YEAR & "-" & @MON & "-" & @MDAY & "-" & @HOUR)&'.txt'
-  ;FileWriteLine($filename,$date&': '&_DebugArray($value))
-  If IsArray($value) Then
-   ConsoleWrite($date&': '&_ArrayToString($value)&@CRLF)
-  Else
-   ConsoleWrite($date&': '&($value)&@CRLF)
-  EndIf
+   $filename = $path&'\'&(@YEAR & "-" & @MON & "-" & @MDAY)&'.txt'
+   If IsArray($value) Then
+	  $value = _ArrayToString($value)
+   EndIf
+   Local $log = $date&': '&$value&@CRLF
+   FileWriteLine($filename,$log)
+   ConsoleWrite($log)
 EndFunc
 
 ; logs data in the main loop
