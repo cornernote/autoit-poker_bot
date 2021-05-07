@@ -5,6 +5,8 @@
 #include <FontConstants.au3>
 
 Global $gui
+Global $guiStreet
+Global $giuCards[7]
 Global $guiCardLabel
 Global $guiCanPlay
 Global $guiCanAllIn
@@ -22,6 +24,12 @@ Func _GuiCreate()
 
    $guiCardLabel = GUICtrlCreateLabel("-guiCardLabel-", 10, 5, 1000)
    GUICtrlSetFont($guiCardLabel, 12, $FW_NORMAL, "", "Terminal")
+
+   $guiStreet = GUICtrlCreateButton("PREFLOP", 100, 0, 50)
+
+   For $i=0 To 6
+	  $giuCards[$i] = GUICtrlCreateButton("C1", 150+50*$i, 0, 50)
+   Next
 
    Local $size = 50
    $guiCanPlay = GUICtrlCreateButton("Play", 1920-$size*6, 0, $size)
@@ -45,13 +53,36 @@ Func _GuiCreate()
 
 EndFunc   ;==>_Gui
 
-Func _GuiUpdate()
+Func _GuiUpdate($cards)
    _GuiUpdateButton($playFailChecksumPlay, $guiCanPlay)
    _GuiUpdateButton($playFailChecksumAllIn, $guiCanAllIn)
    _GuiUpdateButton($playFailChecksumRaise, $guiCanRaise)
    _GuiUpdateButton($playFailChecksumCall, $guiCanCall)
    _GuiUpdateButton($playFailChecksumCheck, $guiCanCheck)
    _GuiUpdateButton($playFailChecksumFold, $guiCanFold)
+   For $i=0 To UBound($cards) - 1
+	  Local $string = ''
+	  If $cards[$i][0] Then
+		 $string = $string & $cards[$i][0]
+	  Else
+         $string = $string & "-"
+	  EndIf
+	  If $cards[$i][1] Then
+		 Switch $cards[$i][1]
+		 Case 'h':
+			$string = $string & '♥'
+		 Case 'd':
+			$string = $string & '♦'
+		 Case 'c':
+			$string = $string & '♣'
+		 Case 's':
+			$string = $string & '♠'
+		 EndSwitch
+	  Else
+         $string = $string & "-"
+	  EndIf
+	  GUICtrlSetData($giuCards[$i], $string)
+   Next
 EndFunc
 
 Func _GuiUpdateButton($check,$button)

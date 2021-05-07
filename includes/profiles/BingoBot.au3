@@ -19,7 +19,7 @@ Func BingoBot()
 	  _PlayCanCheck()
 	  _PlayCanFold()
    EndIf
-   _GuiUpdate()
+   _GuiUpdate($cards)
 
    Local $log = "BingoBot[" & StringLeft($street,1) & "][" & $cardsString & "] vs" & $opponentsCount & " [" & $opponentsString & "] eval=" & $eval
 
