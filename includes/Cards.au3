@@ -23,8 +23,8 @@ Func _Cards()
          $cards[$i][0] = _CardNumber($i)
          $cards[$i][1] = _CardSuit($i)
 	  Else
-		 $cards[$i][0] = Null
-		 $cards[$i][1] = Null
+		 $cards[$i][0] = False
+		 $cards[$i][1] = False
 	  EndIf
    Next
 EndFunc   ;==>_Cards
