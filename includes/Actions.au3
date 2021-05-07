@@ -35,7 +35,6 @@ EndFunc
 
 ; read action buttons
 Func _ActionsRead()
-   ;Local $timer = TimerInit()
    _ActionsReset()
    For $i = 0 To UBound($actions) - 1
 	  $actions[$i] = _ActionRead($i)
@@ -49,7 +48,6 @@ Func _ActionsRead()
 		 $actionAmountToRaise = _ActionReadAmount('raise')
 	  EndIf
    Next
-   ;_Log('_Cards():'&TimerDiff($timer))
 EndFunc
 
 ; read action buttons
