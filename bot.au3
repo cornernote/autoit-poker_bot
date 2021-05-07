@@ -28,6 +28,8 @@
 
 ;
 ; TODO
+; Player - ini configurable player
+; Timer - log timing info
 ; Blind (read table blinds)
 ; Gui - im back/invite/etc
 ; Lobby - ability to auto join game from home/lobby, ability to detect bad table and leave room

@@ -34,7 +34,7 @@ Func BingoBot()
 			$profilePlayAction = 'all_in'
 		 EndIf
 	  EndIf
-   ElseIf _HandEval(_Hand(), _OpponentsCount()) >= 0.80 Then
+   ElseIf _HandEval(_Hand(), _OpponentsCount()) >= 0.7 Then
 	  $profilePlayAction = 'all_in'
    EndIf
 EndFunc
