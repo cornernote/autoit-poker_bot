@@ -36,8 +36,6 @@
 ; Pot (read the main and side pot amount)
 ; Chat (room spam?)
 
-
-
 ; set hotkeys
 HotKeySet("^!x", "_Terminate")
 HotKeySet("^!p", "_PauseToggle")
@@ -52,29 +50,36 @@ _GuiInit()
 ; loop forever
 While 1
    GUICtrlSetBkColor($guiPlay, 0xFFA500)
-   _ClassifyOpen() ; ensure classifier is running
-
-   ; scrape some data
-   _WindowRead()
-   If Not $window[3] Then
-	  _GuiHide()
-	  ContinueLoop
-   EndIf
-   _BlindRead()
-   _CardsRead()
-   _OpponentsRead()
-   _ActionsRead()
-
-   ; run player profile
-   Call($ini_bot_profile)
-
-   ; update gui and log
-   _GuiUpdate()
-   _LogUpdate()
-
-   ; take some action, click some stuff, maybe...
+   Read()
    GUICtrlSetBkColor($guiPlay, 0x008000)
+   Play()
+WEnd
+
+; read screen data
+;_ClassifyCheck(); _CardsRead(); _OpponentsRead(); etc
+Func Read()
+   Local $functions[9] = ['_ClassifyCheck','_WindowRead','_BlindRead','_CardsRead','_OpponentsRead','_ActionsRead',$ini_bot_profile,'_GuiUpdate']
+   Local $timers[UBound($functions)]
+   Local $timerId = 0
+   For $i=0 To UBound($functions) - 1
+	  Local $timer = TimerInit()
+	  Call($functions[$i])
+	  If $functions[$i]=='_WindowRead' Then
+		 If Not $ini_bot_debug And Not $window[3] Then
+			_GuiHide()
+			ContinueLoop
+		 EndIf
+	  EndIf
+	  $timers[$i] = TimerDiff($timer)
+   Next
+   _Log($timers)
+   ; update log
+   _LogUpdate()
+EndFunc
+
+; take some action, click some stuff, maybe...
+Func Play()
    _PlayProfileAction()
    _WindowClosePopups()
    _WindowNextGame()
-WEnd
+EndFunc
