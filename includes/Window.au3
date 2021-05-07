@@ -4,27 +4,30 @@
 Global $window[4]
 
 
-Func _Window()
-   _WindowPos()
-   _WindowCloseImBack()
-   _WindowCloseInvite()
-EndFunc   ;==>_Window
-
-
-Func _WindowPos()
+Func _WindowRead()
+   _WindowReset()
    Opt("WinTitleMatchMode", -2)
    Local $winPos = WinGetPos($ini_game_title)
    If @error Then
-	  ;_Log("window with name '" & $ini_game_title & "' not found...")
+	  _Log("window with name '" & $ini_game_title & "' not found...")
 	  Return
    EndIf
    If $winPos[2] <> 1920 Or $winPos[3] <> 1080 Then
-	  ;_Log("window must be 1920x1080 (currently " & $winPos[2] & "x" & $winPos[3] & ")")
+	  _Log("window must be 1920x1080 (currently " & $winPos[2] & "x" & $winPos[3] & ")")
 	  Return
    EndIf
    $window = $winPos
-EndFunc   ;==>_WindowPos
+EndFunc
 
+Func _WindowReset()
+   Local $_window[UBound($window)]
+   $window = $_window
+EndFunc
+
+Func _WindowClosePopups()
+   _WindowCloseImBack()
+   _WindowCloseInvite()
+EndFunc
 
 Func _WindowCloseImBack()
    ;_Log('_WindowCloseImBack')
@@ -89,6 +92,7 @@ Func _WindowNextGame()
 
 		 _CardsReset()
 		 _OpponentsReset()
+		 _ActionsReset()
 		 _GuiUpdate()
 
 		 ;Local $date = (@YEAR & "-" & @MON & "-" & @MDAY & "-" & @HOUR & "-" & @MIN & "-" & @SEC & "-" & @MSEC)

@@ -2,23 +2,31 @@
 #include <Array.au3>
 #include <ScreenCapture.au3>
 
-; used to get checksum if the match fails
-Global $playFailChecksumPlay
-Global $playFailChecksumAllIn
-Global $playFailChecksumRaise
-Global $playFailChecksumCall
-Global $playFailChecksumCheck
-Global $playFailChecksumFold
+
+; play the action selected by the profile
+Func _PlayProfileAction()
+   Switch $profilePlayAction
+	  Case 'fold'
+		 _PlayFold()
+	  Case 'check'
+		 _PlayCheck()
+	  Case 'call'
+		 _PlayCall($profilePlayMaximumCallAmount)
+	  Case 'raise'
+		 _PlayRaise($profilePlayRaiseAmount, $profilePlayMaximumCallAmount)
+	  Case 'all_in'
+		 _PlayAllIn()
+   EndSwitch
+EndFunc
 
 ; play all in action
 Func _PlayAllIn()
    ;_Log('_PlayAllIn')
-   GUICtrlSetData($guiPlay, 'all-in')
    If Not $actions[$ACTION_FOLD] Then Return
    If $actions[$ACTION_ALL_IN] Then
 	  _Log('_PlayAllIn = yes')
 	  If $paused Then Return True
-	  _PlayLog('action=all-in')
+	  _PlayLog('action=all_in')
 	  Local $x = $window[0]+$ini_action_all_in_x
 	  Local $y = $window[1]+$ini_action_all_in_y
 	  MouseClick($MOUSE_CLICK_LEFT, $x, $y, 1)
@@ -29,23 +37,21 @@ Func _PlayAllIn()
    EndIf
    _Log('_PlayAllIn = no')
    _PlayRaise()
-EndFunc   ;==>_PlayAllIn
+EndFunc
 
 ; play raise action
 Func _PlayRaise($amount = 0, $maximum = 'any')
    ;_Log('_PlayRaise: ' & $amount & '-' & $maximum)
-   GUICtrlSetData($guiPlay, 'raise')
    If Not $actions[$ACTION_FOLD] Then Return
    If $actions[$ACTION_RAISE] Then
-	  Local $current = _AmountToRaise()
-	  If Not IsString($maximum) And $current > $maximum Then
-		 _Log('_PlayRaise = no: amount too high: ' & $current & '>' & $maximum)
-		 _PlayCall('amount:'&$amount&'|maximum:'&$maximum&'|current:'&$current, $maximum)
+	  If Not IsString($maximum) And _ActionAmountToInt($actionAmountToRaise) > $maximum Then
+		 _Log('_PlayRaise = no: amount too high: ' & $actionAmountToRaise & '>' & $maximum)
+		 _PlayCall('amount:'&$amount&'|maximum:'&$maximum&'|current:'&$actionAmountToRaise, $maximum)
 		 Return
 	  EndIf
 	  _Log('_PlayRaise = yes')
 	  If $paused Then Return True
-	  _PlayLog('amount:'&$amount&'|maximum:'&$maximum&'|current:'&$current&'|action:raise')
+	  _PlayLog('amount:'&$amount&'|maximum:'&$maximum&'|current:'&$actionAmountToRaise&'|action:raise')
       Local $x = $window[0]+$ini_action_raise_x
       Local $y = $window[1]+$ini_action_raise_y
 	  ; TODO
@@ -60,25 +66,23 @@ Func _PlayRaise($amount = 0, $maximum = 'any')
    EndIf
    _Log('_PlayRaise = no')
    _PlayCall($maximum)
-EndFunc   ;==>_PlayRaise
+EndFunc
 
 ; play call action
 Func _PlayCall($maximum = 'any')
    ;_Log('_PlayCall: ' & $amount)
-   GUICtrlSetData($guiPlay, 'call')
    If Not $actions[$ACTION_FOLD] Then Return
    If $actions[$ACTION_CALL] Then
       Local $x = $window[0]+$ini_action_call_x
       Local $y = $window[1]+$ini_action_call_y
-	  Local $current = _AmountToCall()
-	  If Not IsString($maximum) And $current > $maximum Then
-		 _Log('_PlayCall = no: amount too high: ' & $current & '>' & $maximum)
-		 _PlayCheck('maximum:'&$maximum&'|current:'&$current)
+	  If Not IsString($maximum) And _ActionAmountToInt($actionAmountToCall) > $maximum Then
+		 _Log('_PlayCall = no: amount too high: ' & $actionAmountToCall & '>' & $maximum)
+		 _PlayCheck('maximum:'&$maximum&'|current:'&$actionAmountToCall)
 		 Return
 	  EndIf
-	  _Log('_PlayCall = yes: amount ok: ' & $current & '<=' & $maximum)
+	  _Log('_PlayCall = yes: amount ok: ' & $actionAmountToCall & '<=' & $maximum)
 	  If $paused Then Return True
-	  _PlayLog('maximum:'&$maximum&'|current:'&$current&'|action:call')
+	  _PlayLog('maximum:'&$maximum&'|current:'&$actionAmountToCall&'|action:call')
 	  MouseClick($MOUSE_CLICK_LEFT, $x, $y, 1)
 	  Sleep(500)
 	  MouseMove($window[0], $window[1], 1)
@@ -86,12 +90,11 @@ Func _PlayCall($maximum = 'any')
    EndIf
    _Log('_PlayCall = no')
    _PlayCheck()
-EndFunc   ;==>_PlayCall
+EndFunc
 
 ; play check action
 Func _PlayCheck()
    ;_Log('_PlayCheck')
-   GUICtrlSetData($guiPlay, 'check')
    If Not $actions[$ACTION_FOLD] Then Return
    If $actions[$ACTION_CHECK] Then
 	  _Log('_PlayCheck = yes')
@@ -106,12 +109,11 @@ Func _PlayCheck()
    EndIf
    _Log('_PlayCheck = no')
    _PlayFold()
-EndFunc   ;==>_PlayCheck
+EndFunc
 
 ; play fold action
 Func _PlayFold()
 	;_Log('_PlayFold')
-   GUICtrlSetData($guiPlay, 'fold')
    If $actions[$ACTION_FOLD] Then
 	  _Log('_PlayFold = yes')
 	  If $paused Then Return True
@@ -124,7 +126,7 @@ Func _PlayFold()
 	  Return True
    EndIf
    _Log('_PlayFold = no')
-EndFunc   ;==>_PlayFold
+EndFunc
 
 ; logs a played action
 Func _PlayLog($log)
@@ -133,5 +135,5 @@ Func _PlayLog($log)
    DirCreate($path)
    _ScreenCapture_Capture($path & "\" & $date & ".png", $window[0], $window[1], $window[0]+$window[2]-1, $window[1]+$window[3]-1, False)
    FileWriteLine($path & "\" & (@YEAR & "-" & @MON & "-" & @MDAY) & ".txt", $date&': '&$log)
-EndFunc   ;==>_PlayLog
+EndFunc
 

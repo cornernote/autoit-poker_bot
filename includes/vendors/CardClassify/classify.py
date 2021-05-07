@@ -28,42 +28,50 @@ for x in range(1000):
 
     # Find all files to classify
     for filename in glob.glob('../../../data/card/*.png'):
-        start = timeit.timeit()
+    
+        # if there is no lock file
+        if not os.path.isfile(filename+'.lock'):
 
-        # convert to 3 channel RGB
-        image = Image.open(filename)
-        newImage = Image.new('RGB', image.size, (255, 255, 255))
-        newImage.paste(image, mask = image.split()[3])
-        image = newImage
+            start = timeit.timeit()
 
-        #resize the image to a 224x224 with the same strategy as in TM2:
-        image = ImageOps.fit(image, (224, 224), Image.ANTIALIAS)
+            # convert to 3 channel RGB
+            image = Image.open(filename)
+            newImage = Image.new('RGB', image.size, (255, 255, 255))
+            newImage.paste(image, mask = image.split()[3])
+            image = newImage
 
-        #turn the image into a numpy array
-        image_array = np.asarray(image)
+            #resize the image to a 224x224 with the same strategy as in TM2:
+            image = ImageOps.fit(image, (224, 224), Image.ANTIALIAS)
 
-        # Normalize the image
-        normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
+            #turn the image into a numpy array
+            image_array = np.asarray(image)
 
-        # Load the image into the array
-        data[0] = normalized_image_array
+            # Normalize the image
+            normalized_image_array = (image_array.astype(np.float32) / 127.0) - 1
 
-        # run the prediction
-        prediction = model.predict(data)
-        score = np.amax(prediction[0])
-        result = np.where(prediction[0] == score)[0][0]
-        cards = ['2','3','4','5','6','7','8','9','T','J','Q','K','A','H','D','C','S']
-        card = cards[result]
-        end = timeit.timeit()
-        
-        # move the file if the prediction is strong
-        if score < 0.9:
-            card = 'X'
+            # Load the image into the array
+            data[0] = normalized_image_array
+
+            # run the prediction
+            prediction = model.predict(data)
+            score = np.amax(prediction[0])
+            result = np.where(prediction[0] == score)[0][0]
+            cards = ['2','3','4','5','6','7','8','9','T','J','Q','K','A','H','D','C','S']
+            dest = cards[result]
+            end = timeit.timeit()
             
-        if os.path.isfile('../../../data/card/'+card+'/'+os.path.basename(filename)):
-            os.remove(filename)
-        else:
-            shutil.move(filename, '../../../data/card/'+card)
-        print(cards[result]+'='+str(score)+' - moved to '+card+' in '+str(end - start)+'s')
+            # set dest as X if prediction is weak
+            if score < 0.9:
+                dest = 'X'
+
+            # if the file is already in the destination then delete it
+            if os.path.isfile('../../../data/card/'+dest+'/'+os.path.basename(filename)):
+                os.remove(filename)
+            # otherwise, move the file to the destination
+            else:
+                shutil.move(filename, '../../../data/card/'+dest)
             
+            # some output
+            print(cards[result]+'='+str(score)+' - moved to '+dest+' in '+str(end - start)+'s')
+                
     time.sleep(0.05)

@@ -19,12 +19,19 @@ Global $actionCodes[5] = ["fold","check","call","raise","all_in"]
 ; used to get checksum if the match fails
 Global $actionFailChecksum[5]
 
+; call and raise amounts
+Global $actionAmountToCall
+Global $actionAmountToRaise
+
 ; reset cards array
 Func _ActionsReset()
-   For $i = 0 To UBound($actions) - 1
-	  $actions[$i] = False
-   Next
-EndFunc   ;==>_ActionsReset
+   $actionAmountToCall = False
+   $actionAmountToRaise = False
+   Local $_actions[UBound($actions)]
+   $actions = $_actions
+   Local $_actionFailChecksum[UBound($actionFailChecksum)]
+   $actionFailChecksum = $_actionFailChecksum
+EndFunc
 
 ; read action buttons
 Func _ActionsRead()
@@ -32,9 +39,18 @@ Func _ActionsRead()
    _ActionsReset()
    For $i = 0 To UBound($actions) - 1
 	  $actions[$i] = _ActionRead($i)
+	  If $i==$ACTION_FOLD And Not $actions[$i] Then
+		 ExitLoop
+	  EndIf
+	  If $i==$ACTION_CALL And $actions[$i] Then
+		 $actionAmountToCall = _ActionReadAmount('call')
+	  EndIf
+	  If $i==$ACTION_RAISE And $actions[$i] Then
+		 $actionAmountToRaise = _ActionReadAmount('raise')
+	  EndIf
    Next
    ;_Log('_Cards():'&TimerDiff($timer))
-EndFunc   ;==>_ActionsRead
+EndFunc
 
 ; read action buttons
 Func _ActionRead($actionIndex)
@@ -52,8 +68,53 @@ Func _ActionRead($actionIndex)
 	  EndIf
    Next
    $actionFailChecksum[$actionIndex] = $currentChecksum
-EndFunc   ;==>_ActionRead
+EndFunc
 
+; read amount
+Func _ActionReadAmount($type)
+   Local $x = $window[0]+Eval("ini_amount_"&$type&"_x")
+   Local $y = $window[1]+Eval("ini_amount_"&$type&"_y")
+   Local $w = Eval("ini_amount_"&$type&"_w")
+   Local $h = Eval("ini_amount_"&$type&"_h")
+   Local $path = @ScriptDir & "\data\ocr"
+   Local $checksum = PixelChecksum($x, $y, $x + $w, $y + $h)
+   If Not FileExists($path & "\" & $checksum & ".png") Then
+	  _ScreenCapture_Capture($path & "\" & $checksum & ".png", $x, $y, $x + $w, $y + $h, False)
+   EndIf
+   Local $amount = _Ocr($checksum & ".png")
+   ;_Log('_ActionReadAmount: '&$amount)
+   Return $amount
+EndFunc
+
+; convert amount (eg 17.5k) to number
+Func _ActionAmountToInt($amount)
+   Local $default = 1000*1000*1000*1000 ; big number
+   If StringInStr($amount, "K") Or StringInStr($amount, "M") Or StringInStr($amount, "B") Then
+	  Local $ext = StringMid($amount, StringLen($amount), 1)
+	  $amount = StringReplace($amount, $ext, "")
+	  Switch $ext
+		 Case 'K'
+			$amount = $amount*1000
+		 Case 'M'
+			$amount = $amount*1000*1000
+		 Case 'B'
+			$amount = $amount*1000*1000*1000
+	  EndSwitch
+   EndIf
+   If IsString($amount) Then
+	  If StringIsDigit($amount) Then
+		 $amount = Int($amount)
+	  Else
+		 Return $default
+	  EndIf
+   EndIf
+   If $amount Then
+	  Return $amount
+   EndIf
+   Return $default
+EndFunc
+
+; get a string of the actions
 Func _ActionsString()
    Local $string
    For $i = 0 To UBound($actions) - 1

@@ -26,15 +26,15 @@ Func _CardsInit()
    For $i = 0 To UBound($cardCodes) - 1
 	  DirCreate($path & "\" & $cardCodes[$i])
    Next
-EndFunc   ;==>_CardInit
+EndFunc
 
 ; reset cards array
 Func _CardsReset()
-   For $i = 0 To UBound($cards, $UBOUND_ROWS) - 1
-	  $cards[$i][0] = False
-	  $cards[$i][1] = False
-   Next
-EndFunc   ;==>_CardsReset
+   Local $_cards[UBound($cards,$UBOUND_ROWS)][UBound($cards,$UBOUND_COLUMNS)]
+   $cards = $_cards
+   Local $_cardFailColor[UBound($cardFailColor)]
+   $cardFailColor = $_cardFailColor
+EndFunc
 
 ; read card numbers and suits
 Func _CardsRead()
@@ -47,7 +47,7 @@ Func _CardsRead()
 	  EndIf
    Next
    ;_Log('_Cards():'&TimerDiff($timer))
-EndFunc   ;==>_Cards
+EndFunc
 
 ; check if a card is visable
 Func _Card($cardIndex)
@@ -55,7 +55,6 @@ Func _Card($cardIndex)
    Local $x = $window[0]+Eval("ini_card_"&($cardIndex+1)&"_number_x")
    Local $y = $window[1]+Eval("ini_card_"&($cardIndex+1)&"_number_y")
    Local $color = Eval("ini_card_"&($cardIndex+1)&"_color")
-   ;_DrawRect($x-2, $y-2, $x+2, $y+2, 0x0000FF)
    ;_Log("_CardNumber " & $cardIndex & ":" & PixelGetColor($x, $y) & " <> " & $color)
    Local $result
    Local $currentColor = PixelGetColor($x, $y)
@@ -67,7 +66,7 @@ Func _Card($cardIndex)
    EndIf
    ;_Log('_Card('&$cardIndex&'):'&TimerDiff($timer))
    Return $result
-EndFunc   ;==>_Card
+EndFunc
 
 ; get a card number
 Func _CardNumber($cardIndex)
@@ -75,23 +74,21 @@ Func _CardNumber($cardIndex)
    Local $x = $window[0]+Eval("ini_card_"&($cardIndex+1)&"_number_x")
    Local $y = $window[1]+Eval("ini_card_"&($cardIndex+1)&"_number_y")
    Local $checksum = PixelChecksum($x, $y, $x + 29, $y + 29)
-   If Not $checksum Then
-	  Return
-   EndIf
+   If Not $checksum Then Return
    Local $card = _CardCode($checksum)
    Local $path = @ScriptDir & "\data\card"
    If Not $card And Not FileExists($path & "\X\" & $checksum & ".png") Then
 	  _Log('unknown card (index:'&$cardIndex&'):'&$checksum)
-	  If Not FileExists($path & "\" & $checksum & ".png") Then
-		 ;_DrawRect($x, $y, $x + 29, $y + 29, 0x0000FF)
-		 _ScreenCapture_Capture($path & "\" & $checksum & ".png", $x, $y, $x + 29, $y + 29, False)
+	  Local $filename = $path & "\" & $checksum & ".png"
+	  If Not FileExists($filename) Then
+		 FileWrite($filename&'.lock','1')
+		 _ScreenCapture_Capture($filename, $x, $y, $x + 29, $y + 29, False)
+		 FileDelete($filename&'.lock')
 	  EndIf
-	  ;Sleep(100)
-      ;$card = _CardCode($checksum)
    EndIf
    ;_Log('_CardNumber('&$cardIndex&'):'&TimerDiff($timer))
    Return $card
-EndFunc   ;==>_CardNumber
+EndFunc
 
 ; get a card suit
 Func _CardSuit($cardIndex)
@@ -99,23 +96,23 @@ Func _CardSuit($cardIndex)
    Local $x = $window[0]+Eval("ini_card_"&($cardIndex+1)&"_suit_x")
    Local $y = $window[1]+Eval("ini_card_"&($cardIndex+1)&"_suit_y")
    Local $checksum = PixelChecksum($x, $y, $x + 19, $y + 19)
-   If Not $checksum Then
-	  Return
-   EndIf
+   If Not $checksum Then Return
    Local $suit = _CardCode($checksum)
    Local $path = @ScriptDir & "\data\card"
    If Not $suit And Not FileExists($path & "\X\" &  $checksum & ".png") Then
 	  _Log('unknown suit (index:'&$cardIndex&'):'&$checksum)
-	  If Not FileExists($path & "\" & $checksum & ".png") Then
-		 ;_DrawRect($x, $y, $x + 19, $y + 19, 0x0000FF)
-		 _ScreenCapture_Capture($path & "\" & $checksum & ".png", $x, $y, $x + 19, $y + 19, False)
+	  Local $filename = $path & "\" & $checksum & ".png"
+	  If Not FileExists($filename) Then
+		 FileWrite($filename&'.lock','1')
+		 _ScreenCapture_Capture($filename, $x, $y, $x + 19, $y + 19, False)
+		 FileDelete($filename&'.lock')
 	  EndIf
 	  ;Sleep(100)
       ;$suit = _CardCode($checksum)
    EndIf
    ;_Log('_CardSuit('&$cardIndex&'):'&TimerDiff($timer))
    Return $suit
-EndFunc   ;==>_CardSuit
+EndFunc
 
 ; get a card number/suit
 Func _CardCode($checksum)
@@ -125,7 +122,7 @@ Func _CardCode($checksum)
 	     Return $cardCodes[$i]
 	  EndIf
    Next
-EndFunc   ;==>_CardCode
+EndFunc
 
 ; get checksum of an area, ensuring no animation
 ;Func _CardChecksum($cardIndex, $x1, $y1, $x2, $y2)
@@ -158,4 +155,4 @@ Func _CardsString()
    Next
    $string = StringStripWS($string, $STR_STRIPTRAILING)
    Return $string
-EndFunc   ;==>_CardsString
+EndFunc

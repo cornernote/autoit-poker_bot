@@ -6,90 +6,70 @@
 #ce ----------------------------------------------------------------------------
 
 
-#include "includes/Debug.au3"
+#include "includes/Terminate.au3"
+#include "includes/Pause.au3"
 #include "includes/Ini.au3"
+#include "includes/Log.au3"
 #include "includes/Classify.au3"
 #include "includes/Ocr.au3"
 #include "includes/Window.au3"
 #include "includes/Cards.au3"
 #include "includes/Opponents.au3"
 #include "includes/Actions.au3"
-#include "includes/Amount.au3"
 #include "includes/Hand.au3"
 #include "includes/Street.au3"
 #include "includes/Play.au3"
 #include "includes/Profiles.au3"
 #include "includes/Gui.au3"
+#include "includes/Screenshot.au3"
 
-#include "includes/vendors/AutoIt/GUICtrlGetBkColor.au3"
 
 ;
 ; TODO
-; Gui - screenshot, eval, opponent buttons, buttons toggle (saves to ini instead of clipboard)
+; Gui - call/raise amounts, eval, im back/invite/popups, opponent buttons
 ; Lobby - ability to auto join game from home/lobby
-; Action (opponent actions and raise amount)
-; Button position (dealer buton)
-; Chat Functions
+; Opponent (opponent actions)
+; Button (dealer buton position)
 ; Blind (read table blinds)
 ; Pot (read the main and side pot amount)
+; Chat (room spam?)
 
 
-;=================================================================
-; Kill Switch
-;=================================================================
-HotKeySet("^!x", "Terminate")
-Func Terminate()
-   _Log('Terminating')
-   _ClassifyClose()
-   _GuiDelete()
-   _Log('Terminated')
-   Exit
-EndFunc
 
-;=================================================================
-; Pause Switch
-;=================================================================
-HotKeySet("^!p", "TogglePause")
-Global $paused = True
-Func TogglePause()
-   If $paused == False Then
-	  $paused = True
-      _Log('Paused')
-	  GUICtrlSetData($guiPause, 'PAUSED')
-	  GUICtrlSetBkColor($guiPause, 0xFF0000)
-   Else
-	  $paused = False
-      _Log('Running')
-	  GUICtrlSetData($guiPause, 'PLAYING')
-	  GUICtrlSetBkColor($guiPause, 0x008000)
-   EndIf
-EndFunc
+; set hotkeys
+HotKeySet("^!x", "_Terminate")
+HotKeySet("^!p", "_PauseToggle")
 
-;=================================================================
-; Main Driver
-;=================================================================
+; call init functions
 _IniInit()
 _CardsInit()
 _ClassifyInit()
 _GuiInit()
+
+; loop forever
 While 1
-   _ClassifyOpen()
-   ;For $i=1 To 5 ; main loop a few times
-	  GUICtrlSetBkColor($guiPlay, 0xFF0000)
-	  _Window()
-	  _CardsRead()
-	  _OpponentsRead()
-	  _ActionsRead()
-	  _GuiUpdate()
 
-	  _Log($ini_bot_profile&"[" & StringLeft(_Street(),1) & "][" & _CardsString() & "] vs" & _OpponentsCount() & " [" & _OpponentsString() & "] eval=" & _HandEval(_Hand(), _OpponentsCount()) & " ["&_ActionsString()&"]")
+   ; scrape the data
+   GUICtrlSetBkColor($guiPlay, 0xFFA500)
+   _ClassifyOpen() ; ensure classifier is running
+   _WindowRead()
+   _CardsRead()
+   _OpponentsRead()
+   _ActionsRead()
 
-	  Call($ini_bot_profile)
-	  GUICtrlSetBkColor($guiPlay, 0x0000FF)
-	  Sleep(50)
-   ;Next
-   ; next game screen
-   GUICtrlSetBkColor($guiPlay, 0x000000)
+   ; run player profile
+   Call($ini_bot_profile)
+
+   ; update gui and log
+   _GuiUpdate()
+   _LogUpdate()
+
+   ; play profile action
+   _PlayProfileAction()
+
+   ; click window stuff
+   GUICtrlSetBkColor($guiPlay, 0x008000)
+   _WindowClosePopups()
    _WindowNextGame()
+
 WEnd
-Terminate()

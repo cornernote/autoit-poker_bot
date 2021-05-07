@@ -1,23 +1,9 @@
-
 #include-once
-
-#include <Array.au3>
 #include <WinAPI.au3>
 
-
-Func _Log($value)
-   Local $date = (@YEAR & "-" & @MON & "-" & @MDAY & "-" & @HOUR & "-" & @MIN & "-" & @SEC & "-" & @MSEC)
-  ;$filename = $logPath&'\log_'&(@YEAR & "-" & @MON & "-" & @MDAY & "-" & @HOUR)&'.txt'
-  ;FileWriteLine($filename,$date&': '&_DebugArray($value))
-  If IsArray($value) Then
-   ConsoleWrite($date&': '&_ArrayToString($value)&@CRLF)
-  Else
-   ConsoleWrite($date&': '&($value)&@CRLF)
-  EndIf
-
- EndFunc
-
-
+; usage:
+;#include "vendors/AutoItExt/GUICtrlGetBkColor.au3"
+;_WinAPI_DrawRect($x, $y, $x + 99, $y + 99, 0x0000FF) ; makes 100x100
 
 Func _DrawRect($start_x, $start_y, $iWidth, $iHeight, $iColor)
     Local $hDC = _WinAPI_GetWindowDC(0) ; DC of entire screen (desktop)
@@ -27,9 +13,7 @@ Func _DrawRect($start_x, $start_y, $iWidth, $iHeight, $iColor)
     DllStructSetData($tRect, 3, $iWidth)
     DllStructSetData($tRect, 4, $iHeight)
     Local $hBrush = _WinAPI_CreateSolidBrush($iColor)
-
     _WinAPI_FrameRect($hDC, DllStructGetPtr($tRect), $hBrush)
-
     ; clear resources
     _WinAPI_DeleteObject($hBrush)
     _WinAPI_ReleaseDC(0, $hDC)
