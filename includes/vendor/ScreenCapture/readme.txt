@@ -1,1 +1,0 @@
-http://www.autoitscript.com/forum/index.php?showtopic=97843&view=findpost&p=703562

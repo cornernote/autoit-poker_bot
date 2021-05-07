@@ -1,2 +1,0 @@
-Original Binaries and Source can be found here:
-http://code.google.com/p/tesseract-ocr/
