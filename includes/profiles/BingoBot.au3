@@ -8,7 +8,7 @@ Func BingoBot()
    Local $opponents = _Opponents()
    Local $opponentsCount = _OpponentsCount($opponents)
    Local $opponentsString = _OpponentsString($opponents)
-   Local $rank = _HandEval($hand, $opponentsCount)
+   Local $eval = _HandEval($hand, $opponentsCount)
 
    ; TODO - move this
    ; update gui
@@ -21,7 +21,7 @@ Func BingoBot()
    EndIf
    _GuiUpdate()
 
-   Local $log = "BingoBot[" & StringLeft($street,1) & "][" & $cardsString & "] vs" & $opponentsCount & " [" & $opponentsString & "] rank=" & $rank
+   Local $log = "BingoBot[" & StringLeft($street,1) & "][" & $cardsString & "] vs" & $opponentsCount & " [" & $opponentsString & "] eval=" & $eval
 
    _Log($log)
    GUICtrlSetData($guiCardLabel, $log)
