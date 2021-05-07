@@ -22,6 +22,9 @@ Func _Cards()
 	  If _Card($i) Then
          $cards[$i][0] = _CardNumber($i)
          $cards[$i][1] = _CardSuit($i)
+	  Else
+		 $cards[$i][0] = Null
+		 $cards[$i][1] = Null
 	  EndIf
    Next
 EndFunc   ;==>_Cards
@@ -106,6 +109,11 @@ Func _CardsString($cards)
    For $i = 0 To UBound($cards, $UBOUND_ROWS) - 1
 	  If $cards[$i][0] Then
          $string = $string & $cards[$i][0]
+	  Else
+         $string = $string & "-"
+	  EndIf
+	  If $cards[$i][1] Then
+         $string = $string & StringLower($cards[$i][1])
 	  Else
          $string = $string & "-"
 	  EndIf

@@ -53,35 +53,40 @@ Func _GuiCreate()
 
 EndFunc   ;==>_Gui
 
-Func _GuiUpdate($cards)
+Func _GuiUpdate()
    _GuiUpdateButton($playFailChecksumPlay, $guiCanPlay)
    _GuiUpdateButton($playFailChecksumAllIn, $guiCanAllIn)
    _GuiUpdateButton($playFailChecksumRaise, $guiCanRaise)
    _GuiUpdateButton($playFailChecksumCall, $guiCanCall)
    _GuiUpdateButton($playFailChecksumCheck, $guiCanCheck)
    _GuiUpdateButton($playFailChecksumFold, $guiCanFold)
+EndFunc
+
+Func _GuiUpdateCards($cards)
    For $i=0 To UBound($cards) - 1
-	  Local $string = ''
+	  Local $number, $suit
 	  If $cards[$i][0] Then
-		 $string = $string & $cards[$i][0]
+		 $number = $cards[$i][0]
 	  Else
-         $string = $string & "-"
+         $number = "-"
 	  EndIf
 	  If $cards[$i][1] Then
 		 Switch $cards[$i][1]
-		 Case 'h':
-			$string = $string & '♥'
-		 Case 'd':
-			$string = $string & '♦'
-		 Case 'c':
-			$string = $string & '♣'
-		 Case 's':
-			$string = $string & '♠'
+			Case 'h':
+			   $suit = '♥'
+			Case 'd':
+			   $suit = '♦'
+			Case 'c':
+			   $suit = '♣'
+			Case 's':
+			   $suit = '♠'
+			Case Else
+			   $suit = "-"
 		 EndSwitch
 	  Else
-         $string = $string & "-"
+         $suit = "-"
 	  EndIf
-	  GUICtrlSetData($giuCards[$i], $string)
+	  GUICtrlSetData($giuCards[$i], $number&$suit)
    Next
 EndFunc
 
