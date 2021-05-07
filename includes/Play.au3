@@ -44,7 +44,7 @@ Func _PlayRaise($amount = 0, $maximum = 'any')
    ;_Log('_PlayRaise: ' & $amount & '-' & $maximum)
    If Not $actions[$ACTION_FOLD] Then Return
    If $actions[$ACTION_RAISE] Then
-	  If Not IsString($maximum) And _ActionAmountToInt($actionAmountToRaise) > $maximum Then
+	  If Not IsString($maximum) And _AmountToInt($actionAmountToRaise) > $maximum Then
 		 _Log('_PlayRaise = no: amount too high: ' & $actionAmountToRaise & '>' & $maximum)
 		 _PlayCall('amount:'&$amount&'|maximum:'&$maximum&'|current:'&$actionAmountToRaise, $maximum)
 		 Return
@@ -75,9 +75,9 @@ Func _PlayCall($maximum = 'any')
    If $actions[$ACTION_CALL] Then
       Local $x = $window[0]+$ini_action_call_x
       Local $y = $window[1]+$ini_action_call_y
-	  If Not IsString($maximum) And _ActionAmountToInt($actionAmountToCall) > $maximum Then
+	  If Not IsString($maximum) And _AmountToInt($actionAmountToCall) > $maximum Then
 		 _Log('_PlayCall = no: amount too high: ' & $actionAmountToCall & '>' & $maximum)
-		 _PlayCheck('maximum:'&$maximum&'|current:'&$actionAmountToCall)
+		 _PlayCheck()
 		 Return
 	  EndIf
 	  _Log('_PlayCall = yes: amount ok: ' & $actionAmountToCall & '<=' & $maximum)

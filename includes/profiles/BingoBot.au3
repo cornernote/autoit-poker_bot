@@ -1,9 +1,9 @@
 #include-once
 
 Func BingoBot()
-   $profilePlayAction = 'check'
+   $profilePlayAction = 'call'
    $profilePlayRaiseAmount = 0
-   $profilePlayMaximumCallAmount = 0
+   $profilePlayMaximumCallAmount = $blind/2
    Local $street = _Street()
    If $street=="WAITING" Then
 	  ; do nothing

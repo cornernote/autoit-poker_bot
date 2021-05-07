@@ -8,6 +8,7 @@
 #include <WinAPISysWin.au3>
 
 Global $gui
+Global $guiBlind
 Global $guiStreet
 Global $giuCards[7]
 Global $guiOpponents[8]
@@ -18,7 +19,7 @@ Global $guiAmountToRaise
 Global $guiActions[5]
 Global $guiPlay
 Global $guiPause
-
+Global $guiClose
 
 Func _GuiInit()
    ; use interrupt events for buttons
@@ -32,18 +33,23 @@ Func _GuiInit()
    ; left gui ($x+= after button)
    ;
 
+   ; blind
+   $guiBlind = GUICtrlCreateButton("-", $x, 0, 50)
+   GUICtrlSetFont($guiBlind, 12, $FW_NORMAL, "", "")
+   GUICtrlSetBkColor($guiBlind, 0xCCCCCC)
+   $x+=60
+
    ; street
    $guiStreet = GUICtrlCreateButton("-", $x, 0, 96)
    GUICtrlSetFont($guiStreet, 14, $FW_NORMAL, "", "")
    GUICtrlSetBkColor($guiStreet, 0xCCCCCC)
    GUICtrlSetOnEvent($guiStreet, "_Screenshot")
-   $x+=100
+   $x+=106
 
    ; cards
    For $i=0 To UBound($giuCards) - 1
 	  $giuCards[$i] = GUICtrlCreateButton("-", $x, 0, 28)
 	  GUICtrlSetFont($giuCards[$i], 14, $FW_NORMAL, "", "")
-      GUICtrlSetOnEvent($giuCards[$i], "_GuiToggleCardColor")
 	  $x+=28
 	  If $i == 1 Then $x+=10
    Next
@@ -88,6 +94,13 @@ Func _GuiInit()
    ;
    $x=10
 
+   ; close
+   $x+=20
+   $guiClose = GUICtrlCreateButton("X", 1920-$x, 0, 20)
+   GUICtrlSetFont($guiClose, 14, $FW_NORMAL, "", "")
+   GUICtrlSetBkColor($guiClose, 0xCCCCCC)
+   GUICtrlSetOnEvent($guiClose, "_Terminate")
+
    ; pause
    $x+=90
    $guiPause = GUICtrlCreateButton("PAUSED", 1920-$x, 0, 90)
@@ -97,16 +110,16 @@ Func _GuiInit()
    GUICtrlSetOnEvent($guiPause, "_PauseToggle")
 
    ; play
-   $x+=100
-   $guiPlay = GUICtrlCreateButton("-", 1920-$x, 0, 90)
+   $x+=120
+   $guiPlay = GUICtrlCreateButton("-", 1920-$x, 0, 110)
    GUICtrlSetFont($guiPlay, 14, $FW_NORMAL, "", "")
    GUICtrlSetBkColor($guiPlay, 0xCCCCCC)
 
    ; actions
    $x+=10
    For $i=0 To UBound($guiActions) - 1
-	  $x+=70
-	  $guiActions[$i] = GUICtrlCreateButton($actionCodes[$i], 1920-$x, 0, 70)
+	  $x+=60
+	  $guiActions[$i] = GUICtrlCreateButton($actionCodes[$i], 1920-$x, 0, 60)
 	  GUICtrlSetFont($guiActions[$i], 14, $FW_NORMAL, "", "")
 	  GUICtrlSetBkColor($guiActions[$i], 0xCCCCCC)
 	  GUICtrlSetColor($guiActions[$i], 0x999999)
@@ -128,6 +141,7 @@ EndFunc
 
 Func _GuiUpdate()
    WinMove($gui, "", $window[0], $window[1]+50)
+   _GuiSetValue($guiBlind, _GuiString($blind))
    _GuiSetValue($guiStreet, _Street())
    _GuiUpdateCards()
    _GuiSetValue($guiVs, 'vs '&_OpponentsCount())
@@ -136,7 +150,7 @@ Func _GuiUpdate()
    _GuiSetValue($guiAmountToCall, 'call:'&_GuiString($actionAmountToCall))
    _GuiSetValue($guiAmountToRaise, 'raise:'&_GuiString($actionAmountToRaise))
    _GuiUpdateActions()
-   _GuiSetValue($guiPlay, $profilePlayAction)
+   _GuiUpdatePlay()
 EndFunc
 
 Func _GuiString($string)
@@ -188,8 +202,8 @@ Func _GuiUpdateCards()
 	  EndIf
 	  GUICtrlSetColor($giuCards[$i], $color)
 	  If $cardFailColor[$i] Then
-		 If GUICtrlGetBkColor($giuCards[$i]) <> 0x000000 Then
-			GUICtrlSetBkColor($giuCards[$i], 0x000000)
+		 If GUICtrlGetBkColor($giuCards[$i]) <> 0xCCCCCC Then
+			GUICtrlSetBkColor($giuCards[$i], 0xCCCCCC)
 		 EndIf
 	  ElseIf $suit == '?' Then
 		 If GUICtrlGetBkColor($giuCards[$i]) <> 0xFFA500 Then
@@ -231,6 +245,16 @@ Func _GuiUpdateActions()
    Next
 EndFunc
 
+Func _GuiUpdatePlay()
+   Local $value = $profilePlayAction
+   If $value == 'call' Then
+	  $value = $value&':'&$profilePlayMaximumCallAmount
+   ElseIf $value == 'raise' Then
+	  $value = $value&':'&$profilePlaRaiseAmount
+   EndIf
+   _GuiSetValue($guiPlay, $value)
+EndFunc
+
 Func _GuiDelete()
     GUIDelete($gui)
 EndFunc
@@ -239,6 +263,14 @@ Func _GuiToggleActionChecksum()
    Local $ctrlId = @GUI_CtrlId
    For $i=0 To UBound($actionFailChecksum)-1
 	  If $ctrlId==$guiActions[$i] Then
+		 If Not $actionFailChecksum[$i] Then
+			MsgBox($MB_OK, "Error" ,"No checksum found in "&$actionCodes[$i]&"!")
+			Return
+		 EndIf
+		 Local $confirm = MsgBox($MB_YESNO, "Confirm" ,"Add "&$actionFailChecksum[$i]&" to "&$actionCodes[$i]&"?")
+		 If $confirm <> $IDYES Then
+			Return
+		 EndIf
 		 _Log('_GuiToggleActionChecksum('&$actionCodes[$i]&'): '&$actionFailChecksum[$i])
 		 ; load ini checksums
 		 Local $code = $actionCodes[$i]
@@ -257,10 +289,4 @@ Func _GuiToggleActionChecksum()
 	  EndIf
    Next
 EndFunc
-
-Func _GuiToggleCardColor($cardIndex=0)
-   _Log('_GuiToggleCardColor: '&$cardFailColor[$cardIndex])
-   ClipPut($cardFailColor[$cardIndex])
-EndFunc
-
 
