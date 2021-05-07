@@ -57,11 +57,13 @@ for x in range(1000):
         end = timeit.timeit()
         
         # move the file if the prediction is strong
-        if score > 0.9:
-            shutil.move(filename, '../../../data/card/'+card)
-            print(cards[result]+'='+str(score)+' - moved to '+card+' in '+str(end - start)+'s')
+        if score < 0.9:
+            card = 'X'
+            
+        if os.path.isfile('../../../data/card/'+card+'/'+os.path.basename(filename)):
+            os.remove(filename)
         else:
-            shutil.move(filename, '../../../data/card/X')
-            print(cards[result]+'='+str(score)+' - moved to X in '+str(end - start)+'s')
+            shutil.move(filename, '../../../data/card/'+card)
+        print(cards[result]+'='+str(score)+' - moved to '+card+' in '+str(end - start)+'s')
             
     time.sleep(0.05)
