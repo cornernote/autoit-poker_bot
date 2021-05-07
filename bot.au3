@@ -68,9 +68,9 @@ EndFunc
 _ClassifyClose()
 _GuiCreate()
 While 1
+   _ClassifyOpen()
    For $i=1 To 3 ; main loop for 5 times
 	  GUICtrlSetBkColor($guiAction, 0xFF0000)
-	  _ClassifyOpen()
 	  _Window()
 	  Local $profile = IniRead(@ScriptDir & "\settings.ini","bot","profile", "")
 	  Call($profile)

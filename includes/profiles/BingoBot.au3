@@ -32,7 +32,7 @@ Func BingoBot()
    ElseIf $street=="PREFLOP" Then
 	  BingoBot_Preflop($log, $cards, $street)
    Else
-	  BingoBot_Play($log, $rank)
+	  BingoBot_Play($log, $eval)
    EndIf
 EndFunc
 
@@ -72,8 +72,8 @@ Func BingoBot_Preflop($log, $cards, $street)
    EndIf
 EndFunc
 
-Func BingoBot_Play($log, $rank)
-   If $rank >= 0.80 Then
+Func BingoBot_Play($log, $eval)
+   If $eval >= 0.80 Then
 	  _PlayAllIn($log)
    Else
 	  _PlayCheck($log)
