@@ -28,7 +28,8 @@ Func _GuiCreate()
    $guiStreet = GUICtrlCreateButton("PREFLOP", 100, 0, 50)
 
    For $i=0 To 6
-	  $giuCards[$i] = GUICtrlCreateButton("C1", 150+50*$i, 0, 50)
+	  $giuCards[$i] = GUICtrlCreateButton("C1", 150+30*$i, 0, 30)
+	  GUICtrlSetFont($giuCards[$i], 14, $FW_NORMAL, "", "")
    Next
 
    Local $size = 50
@@ -64,29 +65,32 @@ EndFunc
 
 Func _GuiUpdateCards($cards)
    For $i=0 To UBound($cards) - 1
-	  Local $number, $suit
+	  Local $number, $suit, $color
+	  $color = 0xCCCCCC
+	  $suit = ''
 	  If $cards[$i][0] Then
 		 $number = $cards[$i][0]
 	  Else
-         $number = "-"
+         $number = " "
 	  EndIf
 	  If $cards[$i][1] Then
 		 Switch $cards[$i][1]
 			Case 'h':
 			   $suit = '♥'
+			   $color = 0xFF0000
 			Case 'd':
 			   $suit = '♦'
+			   $color = 0x000080
 			Case 'c':
 			   $suit = '♣'
+			   $color = 0x008000
 			Case 's':
 			   $suit = '♠'
-			Case Else
-			   $suit = "-"
+			   $color = 0x000000
 		 EndSwitch
-	  Else
-         $suit = "-"
 	  EndIf
 	  GUICtrlSetData($giuCards[$i], $number&$suit)
+	  GUICtrlSetColor($giuCards[$i], $color)
    Next
 EndFunc
 
