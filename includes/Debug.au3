@@ -1,6 +1,7 @@
 
 #include-once
 
+#include <Array.au3>
 #include <WinAPI.au3>
 
 

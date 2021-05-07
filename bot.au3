@@ -6,26 +6,26 @@
 #ce ----------------------------------------------------------------------------
 
 
-#Include "includes/Debug.au3"
-#Include "includes/Classify.au3"
-#Include "includes/Ocr.au3"
-#Include "includes/Window.au3"
-#Include "includes/Cards.au3"
-#Include "includes/Amount.au3"
-#Include "includes/Opponents.au3"
-#Include "includes/Hand.au3"
-#Include "includes/Street.au3"
-#Include "includes/Play.au3"
-#Include "includes/Profiles.au3"
-#Include "includes/Gui.au3"
+#include "includes/Debug.au3"
+#include "includes/Ini.au3"
+#include "includes/Classify.au3"
+#include "includes/Ocr.au3"
+#include "includes/Window.au3"
+#include "includes/Cards.au3"
+#include "includes/Opponents.au3"
+#include "includes/Actions.au3"
+#include "includes/Amount.au3"
+#include "includes/Hand.au3"
+#include "includes/Street.au3"
+#include "includes/Play.au3"
+#include "includes/Profiles.au3"
+#include "includes/Gui.au3"
 
-#include <MsgBoxConstants.au3>
-#include <TrayConstants.au3>
-#include <AutoItConstants.au3>
+#include "includes/vendors/AutoIt/GUICtrlGetBkColor.au3"
 
 ;
 ; TODO
-; Ini - load all ini vars at init
+; Gui - screenshot, eval, opponent buttons, buttons toggle (saves to ini instead of clipboard)
 ; Lobby - ability to auto join game from home/lobby
 ; Action (opponent actions and raise amount)
 ; Button position (dealer buton)
@@ -49,36 +49,47 @@ EndFunc
 ;=================================================================
 ; Pause Switch
 ;=================================================================
-HotKeySet("^!p", "TogglePokerbot")
-Global $paused = False
-Func TogglePokerbot()
+HotKeySet("^!p", "TogglePause")
+Global $paused = True
+Func TogglePause()
    If $paused == False Then
-      _Log('Paused')
 	  $paused = True
+      _Log('Paused')
+	  GUICtrlSetData($guiPause, 'PAUSED')
+	  GUICtrlSetBkColor($guiPause, 0xFF0000)
    Else
-      _Log('Unpaused')
 	  $paused = False
+      _Log('Running')
+	  GUICtrlSetData($guiPause, 'PLAYING')
+	  GUICtrlSetBkColor($guiPause, 0x008000)
    EndIf
 EndFunc
 
 ;=================================================================
 ; Main Driver
 ;=================================================================
-
-_ClassifyClose()
-_GuiCreate()
+_IniInit()
+_CardsInit()
+_ClassifyInit()
+_GuiInit()
 While 1
    _ClassifyOpen()
-   For $i=1 To 3 ; main loop for 5 times
-	  GUICtrlSetBkColor($guiAction, 0xFF0000)
+   ;For $i=1 To 5 ; main loop a few times
+	  GUICtrlSetBkColor($guiPlay, 0xFF0000)
 	  _Window()
-	  Local $profile = IniRead(@ScriptDir & "\settings.ini","bot","profile", "")
-	  Call($profile)
-	  GUICtrlSetBkColor($guiAction, 0x0000FF)
+	  _CardsRead()
+	  _OpponentsRead()
+	  _ActionsRead()
+	  _GuiUpdate()
+
+	  _Log($ini_bot_profile&"[" & StringLeft(_Street(),1) & "][" & _CardsString() & "] vs" & _OpponentsCount() & " [" & _OpponentsString() & "] eval=" & _HandEval(_Hand(), _OpponentsCount()) & " ["&_ActionsString()&"]")
+
+	  Call($ini_bot_profile)
+	  GUICtrlSetBkColor($guiPlay, 0x0000FF)
 	  Sleep(50)
-   Next
+   ;Next
    ; next game screen
-   GUICtrlSetBkColor($guiAction, 0x000000)
+   GUICtrlSetBkColor($guiPlay, 0x000000)
    _WindowNextGame()
 WEnd
 Terminate()

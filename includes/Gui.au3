@@ -8,61 +8,65 @@ Global $gui
 Global $guiStreet
 Global $giuCards[7]
 Global $guiOpponents
-Global $guiCanPlay
-Global $guiCanAllIn
-Global $guiCanRaise
-Global $guiCanCall
-Global $guiCanCheck
-Global $guiCanFold
-Global $guiAction
+Global $guiActions[5]
+Global $guiPlay
+Global $guiPause
 
 
-Func _GuiCreate()
+Func _GuiInit()
+   ; use interrupt events for buttons
    Opt("GUIOnEventMode", 1)
 
+   ; create gui, always on top
    $gui = GUICreate("Bot", 1920, 25, 0, 50, $WS_POPUP)
-
-   $guiStreet = GUICtrlCreateButton("PREFLOP", 0, 0, 100)
-   GUICtrlSetFont($guiStreet, 14, $FW_NORMAL, "", "")
-   For $i=0 To 6
-	  $giuCards[$i] = GUICtrlCreateButton("-", 100+30*$i, 0, 30)
-	  GUICtrlSetFont($giuCards[$i], 14, $FW_NORMAL, "", "")
-   Next
-   $guiOpponents = GUICtrlCreateLabel("-", 330, 5, 150)
-   GUICtrlSetFont($guiOpponents, 12, $FW_NORMAL, "", "Terminal")
-
-   Local $size = 50
-   $guiCanPlay = GUICtrlCreateButton("Play", 1920-$size*6, 0, $size)
-   $guiCanAllIn = GUICtrlCreateButton("AllIn", 1920-$size*5, 0, $size)
-   $guiCanRaise = GUICtrlCreateButton("Raise", 1920-$size*4, 0, $size)
-   $guiCanCall = GUICtrlCreateButton("Call", 1920-$size*3, 0, $size)
-   $guiCanCheck = GUICtrlCreateButton("Check", 1920-$size*2, 0, $size)
-   $guiCanFold = GUICtrlCreateButton("Fold", 1920-$size*1, 0, $size)
-
-   GUICtrlSetOnEvent($guiCanPlay, "_GuiCopyPlay")
-   GUICtrlSetOnEvent($guiCanAllIn, "_GuiCopyAllIn")
-   GUICtrlSetOnEvent($guiCanRaise, "_GuiCopyRaise")
-   GUICtrlSetOnEvent($guiCanCall, "_GuiCopyCall")
-   GUICtrlSetOnEvent($guiCanCheck, "_GuiCopyCheck")
-   GUICtrlSetOnEvent($guiCanFold, "_GuiCopyFold")
-
-   $guiAction = GUICtrlCreateButton("?", 1920-$size*8, 0, $size)
-
-   GUISetState(@SW_SHOW, $gui)
    WinSetOnTop($gui, "", $WINDOWS_ONTOP)
 
-EndFunc   ;==>_Gui
+   ; street
+   $guiStreet = GUICtrlCreateButton("-", 0, 0, 100)
+   GUICtrlSetFont($guiStreet, 14, $FW_NORMAL, "", "")
+
+   ; cards
+   For $i=0 To 1
+	  $giuCards[$i] = GUICtrlCreateButton("-", 110+30*$i, 0, 30)
+	  GUICtrlSetFont($giuCards[$i], 14, $FW_NORMAL, "", "")
+      GUICtrlSetOnEvent($giuCards[$i], "_GuiCopyCard")
+   Next
+   For $i=2 To 6
+	  $giuCards[$i] = GUICtrlCreateButton("-", 120+30*$i, 0, 30)
+	  GUICtrlSetFont($giuCards[$i], 14, $FW_NORMAL, "", "")
+      GUICtrlSetOnEvent($giuCards[$i], "_GuiCopyCard")
+   Next
+
+   ; opponents
+   $guiOpponents = GUICtrlCreateLabel("-", 340, 5, 150)
+   GUICtrlSetFont($guiOpponents, 12, $FW_NORMAL, "", "Terminal")
+
+   ; actions
+   For $i=0 To UBound($guiActions) - 1
+	  $guiActions[$i] = GUICtrlCreateButton($actionCodes[$i], 1920-50*($i+1), 0, 50)
+	  GUICtrlSetOnEvent($guiActions[$i], "_GuiCopyAction")
+   Next
+
+   ; play
+   $guiPlay = GUICtrlCreateButton("-", 1920-50*(UBound($guiActions)+1), 0, 50)
+
+   ; pause
+   $guiPause = GUICtrlCreateButton("PAUSED", 1920-50*(UBound($guiActions)+3), 0, 100)
+   GUICtrlSetColor($guiPause, 0xFFFFFF)
+   GUICtrlSetBkColor($guiPause, 0xFF0000)
+   GUICtrlSetOnEvent($guiPause, "TogglePause")
+
+   ; show gui
+   GUISetState(@SW_SHOW, $gui)
+
+EndFunc   ;==>_GuiInit
 
 Func _GuiUpdate()
-   _GuiUpdateButton($playFailChecksumPlay, $guiCanPlay)
-   _GuiUpdateButton($playFailChecksumAllIn, $guiCanAllIn)
-   _GuiUpdateButton($playFailChecksumRaise, $guiCanRaise)
-   _GuiUpdateButton($playFailChecksumCall, $guiCanCall)
-   _GuiUpdateButton($playFailChecksumCheck, $guiCanCheck)
-   _GuiUpdateButton($playFailChecksumFold, $guiCanFold)
-   _GuiUpdateCards()
+   WinMove($gui, "", $window[0], $window[1]+50)
    _GuiUpdateStreet()
+   _GuiUpdateCards()
    _GuiUpdateOpponents()
+   _GuiUpdateActions()
 EndFunc
 
 Func _GuiUpdateCards()
@@ -91,8 +95,20 @@ Func _GuiUpdateCards()
 			   $color = 0x000000
 		 EndSwitch
 	  EndIf
-	  GUICtrlSetData($giuCards[$i], $number&$suit)
+	  If GUICtrlRead($giuCards[$i]) <> $number&$suit Then
+		 GUICtrlSetData($giuCards[$i], $number&$suit)
+	  EndIf
+	  ;ControlSetText($gui, "", $giuCards[$i], $number&$suit, 0)
 	  GUICtrlSetColor($giuCards[$i], $color)
+	  If $cardFailColor[$i] Then
+		 If GUICtrlGetBkColor($giuCards[$i]) <> 0x000000 Then
+			GUICtrlSetBkColor($giuCards[$i], 0x000000)
+		 EndIf
+	  Else
+		 If GUICtrlGetBkColor($giuCards[$i]) <> 0xFFFFFF Then
+			GUICtrlSetBkColor($giuCards[$i], 0xFFFFFF)
+		 EndIf
+	  EndIf
    Next
 EndFunc
 
@@ -104,49 +120,41 @@ Func _GuiUpdateOpponents()
    GUICtrlSetData($guiOpponents, 'vs'&_OpponentsCount()&' '&_OpponentsString())
 EndFunc
 
-Func _GuiUpdateButton($check,$button)
-   If $check Then
-	  GUICtrlSetBkColor($button, 0x000000)
-	  GUICtrlSetColor($button, 0xFFFFFF)
-   Else
-	  GUICtrlSetBkColor($button, 0xFFFFFF)
-	  GUICtrlSetColor($button, 0x00FF00)
-   EndIf
+Func _GuiUpdateActions()
+   For $i=0 To UBound($actions) - 1
+	  If $actions[$i] Then
+		 If GUICtrlGetBkColor($guiActions[$i]) <> 0x008000 Then
+			GUICtrlSetBkColor($guiActions[$i], 0x008000)
+			GUICtrlSetColor($guiActions[$i], 0x000000)
+		 EndIf
+	  Else
+		 If GUICtrlGetBkColor($guiActions[$i]) <> 0xCCCCCC Then
+			GUICtrlSetBkColor($guiActions[$i], 0xCCCCCC)
+			GUICtrlSetColor($guiActions[$i], 0x999999)
+		 EndIf
+	  EndIf
+   Next
 EndFunc
+
 
 
 Func _GuiDelete()
     GUIDelete($gui)
 EndFunc   ;==>_GuiDelete
 
-Func _GuiCopyAllIn()
-   _Log('_GuiCopyAllIn: '&$playFailChecksumAllIn)
-   ClipPut($playFailChecksumAllIn)
-EndFunc   ;==>_GuiCopyAllIn
-
-Func _GuiCopyRaise()
-   _Log('_GuiCopyRaise: '&$playFailChecksumRaise)
-   ClipPut($playFailChecksumRaise)
-EndFunc   ;==>_GuiCopyRaise
-
-Func _GuiCopyCall()
-   _Log('_GuiCopyCall: '&$playFailChecksumCall)
-   ClipPut($playFailChecksumCall)
-EndFunc   ;==>_GuiCopyCall
-
-Func _GuiCopyCheck()
-   _Log('_GuiCopyCheck: '&$playFailChecksumCheck)
-   ClipPut($playFailChecksumCheck)
-EndFunc   ;==>_GuiCopyCheck
-
-Func _GuiCopyFold()
-   _Log('_GuiCopyFold: '&$playFailChecksumFold)
-   ClipPut($playFailChecksumFold)
-EndFunc   ;==>_GuiCopyFold
-
-Func _GuiCopyPlay()
-   _Log('_GuiCopyPlay: '&$playFailChecksumPlay)
-   ClipPut($playFailChecksumPlay)
+Func _GuiCopyAction()
+   Local $ctrlId = @GUI_CtrlId
+   For $i=0 To UBound($actionFailChecksum)-1
+	  If $ctrlId==$guiActions[$i] Then
+		 _Log('_GuiCopyAction('&$actionCodes[$i]&'): '&$i)
+		 ClipPut($actionFailChecksum[$i])
+	  EndIf
+   Next
 EndFunc   ;==>_GuiCopyPlay
+
+Func _GuiCopyCard($cardIndex=0)
+   _Log('_GuiCopyCard: '&$cardFailColor[$cardIndex])
+   ClipPut($cardFailColor[$cardIndex])
+EndFunc   ;==>_GuiCopyCard
 
 

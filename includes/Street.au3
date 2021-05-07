@@ -3,11 +3,11 @@
 
 Func _Street()
    Local $hand = _Hand()
-   If StringInStr($hand,'-') Then Return 'NOGAME'
+   If StringInStr($hand,'-') Then Return 'WAITING'
    Local $cards = StringSplit($hand, ' ')
    Local $cardCount = Ubound($cards) - 1
    If $cardCount < 2 Then
-	  Return 'NOGAME'
+	  Return 'WAITING'
    EndIf
    If $cardCount == 2 Then
 	  Return 'PREFLOP'

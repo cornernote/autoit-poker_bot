@@ -12,3 +12,7 @@ Func _ClassifyClose()
 	  ProcessClose("python.exe")
    EndIf
 EndFunc   ;==>_ClassifyClose
+
+Func _ClassifyInit()
+   _ClassifyClose() ; close any stray process
+EndFunc   ;==>_ClassifyInit

@@ -1,0 +1,69 @@
+;=================================================================
+; Read the Action Buttons
+;=================================================================
+#include-once
+
+#include <Array.au3>
+
+; stores the read cards
+Global $actions[5]
+
+; define number and suit checksum maps
+Const $ACTION_FOLD = 0
+Const $ACTION_CHECK = 1
+Const $ACTION_CALL = 2
+Const $ACTION_RAISE = 3
+Const $ACTION_ALL_IN = 4
+Global $actionCodes[5] = ["fold","check","call","raise","all_in"]
+
+; used to get checksum if the match fails
+Global $actionFailChecksum[5]
+
+; reset cards array
+Func _ActionsReset()
+   For $i = 0 To UBound($actions) - 1
+	  $actions[$i] = False
+   Next
+EndFunc   ;==>_ActionsReset
+
+; read action buttons
+Func _ActionsRead()
+   ;Local $timer = TimerInit()
+   _ActionsReset()
+   For $i = 0 To UBound($actions) - 1
+	  $actions[$i] = _ActionRead($i)
+   Next
+   ;_Log('_Cards():'&TimerDiff($timer))
+EndFunc   ;==>_ActionsRead
+
+; read action buttons
+Func _ActionRead($actionIndex)
+   $actionFailChecksum[$actionIndex] = False
+   Local $code = $actionCodes[$actionIndex]
+   Local $x = $window[0]+Eval("ini_action_"&$code&"_x")
+   Local $y = $window[0]+Eval("ini_action_"&$code&"_y")
+   Local $checksums = StringSplit(Eval("ini_action_"&$code&"_checksums"), ",")
+   Local $size = 2
+   Local $currentChecksum = PixelChecksum($x-$size, $y-$size, $x+$size, $y+$size)
+   For $i = 1 To $checksums[0]
+	  Local $checksum = $checksums[$i]
+	  If $currentChecksum = $checksum Then
+		 Return True
+	  EndIf
+   Next
+   $actionFailChecksum[$actionIndex] = $currentChecksum
+EndFunc   ;==>_ActionRead
+
+Func _ActionsString()
+   Local $string
+   For $i = 0 To UBound($actions) - 1
+	  If $actions[$i] Then
+		 $string = $string & $actionCodes[$i]
+	  Else
+		 $string = $string & "-"
+	  EndIf
+	  $string = $string & " "
+   Next
+   $string = StringStripWS($string, $STR_STRIPTRAILING)
+   Return $string
+EndFunc

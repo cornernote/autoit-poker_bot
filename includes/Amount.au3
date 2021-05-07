@@ -1,8 +1,8 @@
 #include-once
 
 Func _AmountToCall()
-   Local $x = $windowPos[0]+Int(IniRead(@ScriptDir & "\settings.ini","amount","call_amount_x", 0))
-   Local $y = $windowPos[1]+Int(IniRead(@ScriptDir & "\settings.ini","amount","call_amount_y", 0))
+   Local $x = $window[0]+$ini_amount_call_x
+   Local $y = $window[1]+$ini_amount_call_y
    Local $checksum = PixelChecksum($x, $y, $x + 130, $y + 35)
    Local $path = @ScriptDir & "\data\ocr"
    _ScreenCapture_Capture($path & "\" & $checksum & ".png", $x, $y, $x + 130, $y + 35, False)
@@ -12,8 +12,8 @@ Func _AmountToCall()
 EndFunc   ;==>_AmountToCall
 
 Func _AmountToRaise()
-   Local $x = $windowPos[0]+Int(IniRead(@ScriptDir & "\settings.ini","amount","raise_amount_x", 0))
-   Local $y = $windowPos[1]+Int(IniRead(@ScriptDir & "\settings.ini","amount","raise_amount_y", 0))
+   Local $x = $window[0]+$ini_amount_raise_x
+   Local $y = $window[1]+$ini_amount_raise_y
    Local $path = @ScriptDir & "\data\ocr"
    Local $checksum = PixelChecksum($x, $y, $x + 130, $y + 35)
    _ScreenCapture_Capture($path & "\" & $checksum & ".png", $x, $y, $x + 130, $y + 35, False)

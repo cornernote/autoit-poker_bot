@@ -1,38 +1,17 @@
 #include-once
 
 Func BingoBot()
-   _Cards()
-   _Opponents()
-
    Local $street = _Street()
-   Local $opponentsCount = _OpponentsCount()
-   Local $eval = _HandEval(_Hand(), $opponentsCount)
-
-   ; TODO - move this
-   ; update gui
-   If _PlayCanPlay() Then
-	  _PlayCanAllIn()
-	  _PlayCanRaise()
-	  _PlayCanCall()
-	  _PlayCanCheck()
-	  _PlayCanFold()
-   EndIf
-   _GuiUpdate()
-
-   Local $log = "BingoBot[" & StringLeft(_Street(),1) & "][" & _CardsString() & "] vs" & $opponentsCount & " [" & _OpponentsString() & "] eval=" & $eval
-
-   _Log($log)
-
-   If $street=='NOGAME' Then
-	  GUICtrlSetData($guiAction, 'waiting')
+   If $street=='WAITING' Then
+	  GUICtrlSetData($guiPlay, ' ')
    ElseIf $street=="PREFLOP" Then
-	  BingoBot_Preflop($log, $cards, $street)
+	  BingoBot_Preflop()
    Else
-	  BingoBot_Play($log, $eval)
+	  BingoBot_Play()
    EndIf
 EndFunc
 
-Func BingoBot_Preflop($log, $cards, $street)
+Func BingoBot_Preflop()
    $allIn = False;
    ; AA, KK
    If $cards[0][0] == $cards[1][0] And ($cards[0][0] == 'A' Or $cards[0][0] == 'K') Then
@@ -62,16 +41,16 @@ Func BingoBot_Preflop($log, $cards, $street)
    EndIf
    ; lets do it !
    If $allIn Then
-	  _PlayAllIn($log)
+	  _PlayAllIn()
    Else
-	  _PlayCheck($log)
+	  _PlayCheck()
    EndIf
 EndFunc
 
-Func BingoBot_Play($log, $eval)
-   If $eval >= 0.80 Then
-	  _PlayAllIn($log)
+Func BingoBot_Play()
+   If _HandEval(_Hand(), _OpponentsCount()) >= 0.80 Then
+	  _PlayAllIn()
    Else
-	  _PlayCheck($log)
+	  _PlayCheck()
    EndIf
 EndFunc
