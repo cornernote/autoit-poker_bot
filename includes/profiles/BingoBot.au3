@@ -1,11 +1,12 @@
 #include-once
 
 Func BingoBot()
-   Local $cards = _Cards()
+   _Cards()
+   _Opponents()
+
    Local $cardsString = _CardsString($cards)
    Local $hand = _Hand($cards)
    Local $street = _Street($hand)
-   Local $opponents = _Opponents()
    Local $opponentsCount = _OpponentsCount($opponents)
    Local $opponentsString = _OpponentsString($opponents)
    Local $eval = _HandEval($hand, $opponentsCount)
