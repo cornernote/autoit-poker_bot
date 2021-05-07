@@ -104,7 +104,7 @@ Func _CardChecksum($cardIndex, $x1, $y1, $x2, $y2)
 EndFunc
 
 ; convert card array to string
-Func _CardsString($cards)
+Func _CardsString()
    Local $string
    For $i = 0 To UBound($cards, $UBOUND_ROWS) - 1
 	  If $cards[$i][0] Then
@@ -122,15 +122,3 @@ Func _CardsString($cards)
    $string = StringStripWS($string, $STR_STRIPTRAILING)
    Return $string
 EndFunc   ;==>_CardsString
-
-; convert card string to array
-Func _CardsArray($cards)
-   Local $array[7][2]
-   Local $cardsTmp = StringSplit($cards," ",1)
-   For $i = 0 To UBound($cardsTmp)-1
-	  $cards[$i][0] = StringLeft($cardsTmp[$i+1],1)
-	  $cards[$i][1] = StringRight($cardsTmp[$i+1],1)
-   Next
-   Return $cards
-EndFunc   ;==>_CardsArray
-

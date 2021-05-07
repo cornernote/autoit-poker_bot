@@ -1,7 +1,8 @@
 #include-once
 #include <Array.au3>
 
-Func _Street($hand)
+Func _Street()
+   Local $hand = _Hand()
    If StringInStr($hand,'-') Then Return 'NOGAME'
    Local $cards = StringSplit($hand, ' ')
    Local $cardCount = Ubound($cards) - 1

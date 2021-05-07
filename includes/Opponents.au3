@@ -17,7 +17,7 @@ Func _Opponents()
 EndFunc   ;==>_Opponents
 
 ; get number of opponents
-Func _OpponentsCount($opponents)
+Func _OpponentsCount()
    Local $opponentsCount = 0
    For $i = 0 To UBound($opponents, $UBOUND_ROWS) - 1
 	  If $opponents[$i] Then
@@ -41,7 +41,7 @@ EndFunc   ;==>_OpponentSitting
 
 
 ; convert opponent array to string
-Func _OpponentsString($opponents)
+Func _OpponentsString()
    Local $string
    For $i = 0 To UBound($opponents, $UBOUND_ROWS) - 1
 	  If $opponents[$i] Then

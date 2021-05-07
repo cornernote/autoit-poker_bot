@@ -4,12 +4,9 @@ Func BingoBot()
    _Cards()
    _Opponents()
 
-   Local $cardsString = _CardsString($cards)
-   Local $hand = _Hand($cards)
-   Local $street = _Street($hand)
-   Local $opponentsCount = _OpponentsCount($opponents)
-   Local $opponentsString = _OpponentsString($opponents)
-   Local $eval = _HandEval($hand, $opponentsCount)
+   Local $street = _Street()
+   Local $opponentsCount = _OpponentsCount()
+   Local $eval = _HandEval(_Hand(), $opponentsCount)
 
    ; TODO - move this
    ; update gui
@@ -21,13 +18,10 @@ Func BingoBot()
 	  _PlayCanFold()
    EndIf
    _GuiUpdate()
-   _GuiUpdateCards($cards)
 
-   Local $log = "BingoBot[" & StringLeft($street,1) & "][" & $cardsString & "] vs" & $opponentsCount & " [" & $opponentsString & "] eval=" & $eval
+   Local $log = "BingoBot[" & StringLeft(_Street(),1) & "][" & _CardsString() & "] vs" & $opponentsCount & " [" & _OpponentsString() & "] eval=" & $eval
 
    _Log($log)
-   GUICtrlSetData($guiCardLabel, $log)
-   ;_GuiUpdateButton('?', $guiAction)
 
    If $street=='NOGAME' Then
 	  GUICtrlSetData($guiAction, 'waiting')

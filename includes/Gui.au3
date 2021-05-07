@@ -7,7 +7,7 @@
 Global $gui
 Global $guiStreet
 Global $giuCards[7]
-Global $guiCardLabel
+Global $guiOpponents
 Global $guiCanPlay
 Global $guiCanAllIn
 Global $guiCanRaise
@@ -22,15 +22,14 @@ Func _GuiCreate()
 
    $gui = GUICreate("Bot", 1920, 25, 0, 50, $WS_POPUP)
 
-   $guiCardLabel = GUICtrlCreateLabel("-guiCardLabel-", 10, 5, 1000)
-   GUICtrlSetFont($guiCardLabel, 12, $FW_NORMAL, "", "Terminal")
-
-   $guiStreet = GUICtrlCreateButton("PREFLOP", 100, 0, 50)
-
+   $guiStreet = GUICtrlCreateButton("PREFLOP", 0, 0, 100)
+   GUICtrlSetFont($guiStreet, 14, $FW_NORMAL, "", "")
    For $i=0 To 6
-	  $giuCards[$i] = GUICtrlCreateButton("C1", 150+30*$i, 0, 30)
+	  $giuCards[$i] = GUICtrlCreateButton("-", 100+30*$i, 0, 30)
 	  GUICtrlSetFont($giuCards[$i], 14, $FW_NORMAL, "", "")
    Next
+   $guiOpponents = GUICtrlCreateLabel("-", 330, 5, 150)
+   GUICtrlSetFont($guiOpponents, 12, $FW_NORMAL, "", "Terminal")
 
    Local $size = 50
    $guiCanPlay = GUICtrlCreateButton("Play", 1920-$size*6, 0, $size)
@@ -61,9 +60,12 @@ Func _GuiUpdate()
    _GuiUpdateButton($playFailChecksumCall, $guiCanCall)
    _GuiUpdateButton($playFailChecksumCheck, $guiCanCheck)
    _GuiUpdateButton($playFailChecksumFold, $guiCanFold)
+   _GuiUpdateCards()
+   _GuiUpdateStreet()
+   _GuiUpdateOpponents()
 EndFunc
 
-Func _GuiUpdateCards($cards)
+Func _GuiUpdateCards()
    For $i=0 To UBound($cards) - 1
 	  Local $number, $suit, $color
 	  $color = 0xCCCCCC
@@ -80,7 +82,7 @@ Func _GuiUpdateCards($cards)
 			   $color = 0xFF0000
 			Case 'd':
 			   $suit = '♦'
-			   $color = 0x000080
+			   $color = 0x0000FF
 			Case 'c':
 			   $suit = '♣'
 			   $color = 0x008000
@@ -92,6 +94,14 @@ Func _GuiUpdateCards($cards)
 	  GUICtrlSetData($giuCards[$i], $number&$suit)
 	  GUICtrlSetColor($giuCards[$i], $color)
    Next
+EndFunc
+
+Func _GuiUpdateStreet()
+   GUICtrlSetData($guiStreet, _Street())
+EndFunc
+
+Func _GuiUpdateOpponents()
+   GUICtrlSetData($guiOpponents, 'vs'&_OpponentsCount()&' '&_OpponentsString())
 EndFunc
 
 Func _GuiUpdateButton($check,$button)

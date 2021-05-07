@@ -4,7 +4,7 @@
 #include-once
 
 
-Func _Hand($cards)
+Func _Hand()
    Local $hand
    If ($cards[0][0]<>False And $cards[1][0]<>False) Or ($cards[2][0]<>False) Then
       If $cards[0][0]<>False And $cards[1][0]<>False Then
