@@ -83,7 +83,7 @@ Func _PlayCall($maximum = 'any')
 	  EndIf
 	  _Log('_PlayCall = yes: amount ok: ' & $actionAmountToCall & '<=' & $maximum)
 	  If $paused Then Return True
-	  __LogPlay('maximum:'&$maximum&'|action:call')
+	  _LogPlay('maximum:'&$maximum&'|action:call')
 	  MouseClick($MOUSE_CLICK_LEFT, $x, $y, 1)
 	  Sleep(500)
 	  MouseMove($window[0], $window[1], 1)
