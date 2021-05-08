@@ -27,6 +27,8 @@ Func _GuiInit()
 
    ; create gui
    $gui = GUICreate("Bot", 1920, 25, 0, 50, $WS_POPUP, $WS_EX_LAYERED)
+   GUISetOnEvent($GUI_EVENT_CLOSE, "_TerminateConfirm")
+   GUISetOnEvent($GUI_EVENT_SECONDARYUP, "_GuiSecondaryUp")
    Local $x = 10
 
    ;
@@ -37,6 +39,7 @@ Func _GuiInit()
    $guiBlind = GUICtrlCreateButton("-", $x, 0, 50)
    GUICtrlSetFont($guiBlind, 12, $FW_NORMAL, "", "")
    GUICtrlSetBkColor($guiBlind, 0xCCCCCC)
+   GUICtrlSetOnEvent($guiBlind, "_GuiSetBlind")
    $x+=60
 
    ; street
@@ -99,7 +102,7 @@ Func _GuiInit()
    $guiClose = GUICtrlCreateButton("X", 1920-$x, 0, 20)
    GUICtrlSetFont($guiClose, 14, $FW_NORMAL, "", "")
    GUICtrlSetBkColor($guiClose, 0xCCCCCC)
-   GUICtrlSetOnEvent($guiClose, "_Terminate")
+   GUICtrlSetOnEvent($guiClose, "_TerminateConfirm")
 
    ; pause
    $x+=90
@@ -152,7 +155,9 @@ Func _GuiShow()
 EndFunc
 
 Func _GuiUpdate()
-   WinMove($gui, "", $window[0], $window[1]+50)
+   If Not $ini_bot_debug Then
+	  WinMove($gui, "", $window[0], $window[1]+50)
+   EndIf
    _GuiSetValue($guiBlind, _GuiString($blind))
    _GuiSetValue($guiStreet, _Street())
    _GuiUpdateCards()
@@ -297,5 +302,22 @@ Func _GuiToggleActionChecksum()
 		 ClipPut($actionFailChecksum[$i])
 	  EndIf
    Next
+EndFunc
+
+Func _GuiSetBlind()
+   Local $blind = InputBox("Set Room Blind", "What is the Big Blind Amount in this room?")
+   If Not $blind Then Return
+   _Log($blind)
+   ;_BlindRoomSave($blind)
+EndFunc
+
+Func _GuiSecondaryUp()
+   $cursor = GUIGetCursorInfo($gui)
+;   If $cursor[4] == $guiBlind Then
+;	  Local $confirm = MsgBox($MB_OKCANCEL, "Set Blind Position", "Click the top left of the blind area.")
+;	  If $confirm <> $IDYES Then
+;		 Return
+;	  EndIf
+;   EndIf
 EndFunc
 
