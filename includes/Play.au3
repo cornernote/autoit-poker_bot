@@ -5,7 +5,11 @@
 
 ; play the action selected by the profile
 Func _PlayProfileAction()
-   If StringInStr(_Hand(),'-') Then Return 0 ; do nothing if the hand was not fully read
+   Local $hand = _Hand()
+   ; do nothing if the hand was not fully read
+   If Not $hand Then Return
+   If StringInStr($hand,'-') Then Return
+   ; play the selected action
    Switch $profilePlayAction
 	  Case 'fold'
 		 _PlayFold()

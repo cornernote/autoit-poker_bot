@@ -74,8 +74,8 @@ Func Read()
 	  EndIf
 	  $timers[$i] = TimerDiff($timer)
    Next
-   _Log($timers)
    ; update log
+   ;_Log($timers)
    _LogUpdate()
 EndFunc
 
