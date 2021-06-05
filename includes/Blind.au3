@@ -9,17 +9,17 @@
 Global $blind
 
 ; used to get checksum if the match fails
-Global $blindFailChecksum
+;Global $blindFailChecksum
 
 ; reset cards array
 Func _BlindReset()
    $blind = False
-   $blindFailChecksum = False
+   ;$blindFailChecksum = False
 EndFunc
 
 ; read action buttons
 Func _BlindRead()
-   _BlindReset()
+   ;_BlindReset()
    ; TODO
-   $blind = "400"
+   ;$blind = "400"
 EndFunc

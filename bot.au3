@@ -21,7 +21,7 @@
 #include "includes/Hand.au3"
 #include "includes/Street.au3"
 #include "includes/Play.au3"
-#include "includes/Profiles.au3"
+#include "includes/Profile.au3"
 #include "includes/Gui.au3"
 #include "includes/Screenshot.au3"
 
@@ -42,25 +42,21 @@
 HotKeySet("^q", "_Terminate")
 HotKeySet("^p", "_PauseToggle")
 
-; init
-_IniInit()
-_LogInit()
-_CardsInit()
-_ClassifyInit()
-_GuiInit()
 
-; loop forever
-While 1
-   GUICtrlSetBkColor($guiPlay, 0xFFA500)
-   Read()
-   GUICtrlSetBkColor($guiPlay, 0x008000)
-   Play()
-WEnd
+; init
+Func Init()
+   _IniInit()
+   _LogInit()
+   _CardsInit()
+   _ClassifyInit()
+   _ProfileInit()
+   _GuiInit()
+EndFunc
 
 ; read screen data
 ;_ClassifyCheck(); _CardsRead(); _OpponentsRead(); etc
 Func Read()
-   Local $functions[9] = ['_ClassifyCheck','_WindowRead','_BlindRead','_CardsRead','_OpponentsRead','_ActionsRead',$ini_bot_profile,'_GuiUpdate']
+   Local $functions[9] = ['_WindowClosePopups','_ClassifyCheck','_WindowRead','_BlindRead','_CardsRead','_OpponentsRead','_ActionsRead',$ini_bot_profile,'_GuiUpdate']
    Local $timers[UBound($functions)]
    Local $timerId = 0
    For $i=0 To UBound($functions) - 1
@@ -85,3 +81,12 @@ Func Play()
    _WindowClosePopups()
    _WindowNextGame()
 EndFunc
+
+; loop forever
+Init()
+While 1
+   GUICtrlSetBkColor($guiPlay, 0xFFA500)
+   Read()
+   GUICtrlSetBkColor($guiPlay, 0x008000)
+   Play()
+WEnd

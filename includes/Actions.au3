@@ -55,7 +55,7 @@ Func _ActionRead($actionIndex)
    $actionFailChecksum[$actionIndex] = False
    Local $code = $actionCodes[$actionIndex]
    Local $x = $window[0]+Eval("ini_action_"&$code&"_x")
-   Local $y = $window[0]+Eval("ini_action_"&$code&"_y")
+   Local $y = $window[1]+Eval("ini_action_"&$code&"_y")
    Local $checksums = StringSplit(Eval("ini_action_"&$code&"_checksums"), ",")
    Local $size = 2
    Local $currentChecksum = PixelChecksum($x-$size, $y-$size, $x+$size, $y+$size)

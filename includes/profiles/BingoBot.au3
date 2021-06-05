@@ -1,5 +1,8 @@
 #include-once
 
+Func BingoBotInit()
+EndFunc
+
 Func BingoBot()
    $profilePlayAction = 'call'
    $profilePlayRaiseAmount = 0

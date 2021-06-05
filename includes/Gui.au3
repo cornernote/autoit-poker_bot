@@ -155,7 +155,7 @@ Func _GuiShow()
 EndFunc
 
 Func _GuiUpdate()
-   If Not $ini_bot_debug Then
+   If $window[3] Then
 	  WinMove($gui, "", $window[0], $window[1]+50)
    EndIf
    _GuiSetValue($guiBlind, _GuiString($blind))
@@ -268,7 +268,7 @@ Func _GuiUpdatePlay()
    If $value == 'call' Then
 	  $value = $value&':'&$profilePlayMaximumCallAmount
    ElseIf $value == 'raise' Then
-	  $value = $value&':'&$profilePlaRaiseAmount
+	  $value = $value&':'&$profilePlayRaiseAmount
    EndIf
    _GuiSetValue($guiPlay, $value)
 EndFunc
@@ -305,9 +305,9 @@ Func _GuiToggleActionChecksum()
 EndFunc
 
 Func _GuiSetBlind()
-   Local $blind = InputBox("Set Room Blind", "What is the Big Blind Amount in this room?")
-   If Not $blind Then Return
-   _Log($blind)
+   Local $setBlind = InputBox("Set Room Blind", "What is the Big Blind Amount in this room?")
+   If Not $setBlind Then Return
+   $blind = $setBlind
    ;_BlindRoomSave($blind)
 EndFunc
 
